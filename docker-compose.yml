@@ -34,7 +34,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          "python manage.py health_check -s readiness --skip-checks",
+          "python manage.py health_check -s readiness && python manage.py health_check -s liveness",
         ]
       interval: 10s
       timeout: 5s

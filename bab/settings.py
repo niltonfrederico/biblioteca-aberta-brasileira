@@ -33,10 +33,8 @@ DEBUG = True
 
 ALLOWED_HOSTS: list[str] = []
 
-
 # Application definition
-
-INSTALLED_APPS = [
+DJANGO_APPS: list[str] = [
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -45,7 +43,20 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
 ]
 
+THIRD_PARTY_APPS: list[str] = [
+    "cid.apps.CidAppConfig",
+    "health_check",
+    "health_check.db",
+    "health_check.contrib.migrations",
+    "health_check.contrib.s3boto3_storage",
+]
+
+LOCAL_APPS: list[str] = []
+
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
+
 MIDDLEWARE = [
+    "cid.middleware.CidMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -78,11 +89,15 @@ WSGI_APPLICATION = "bab.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": env.str("DB_ENGINE", "django.db.backends.sqlite3"),
+        "NAME": env.str("DB_DATABASE", BASE_DIR / "db.sqlite3"),
+        "USER": env.str("DB_USER"),
+        "HOST": env.str("DB_HOST"),
+        "PORT": env.str("DB_PORT"),
+        "PASSWORD": env.str("DB_PASSWORD"),
+        "CONN_MAX_AGE": env.str("DB_CONN_MAX_AGE", 600),
     },
 }
 
@@ -108,15 +123,11 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
-
-LANGUAGE_CODE = "en-us"
-
-TIME_ZONE = "UTC"
-
+LANGUAGE_CODE = "pt-br"
+TIME_ZONE = "America/Sao_Paulo"
 USE_I18N = True
-
+USE_L10N = True
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
@@ -127,3 +138,6 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Correlation ID
+CID_GENERATE = True

@@ -4,9 +4,9 @@ A collaborative project to create an open digital library of Brazilian literatur
 
 ## Badges
 
-![GitHub](https://img.shields.io/badge/GitHub-Repository-blue)
-![Markdown](https://img.shields.io/badge/Markdown-Formatting-lightgrey)
-![License](https://img.shields.io/badge/License-MIT-green)
+![Django](https://img.shields.io/badge/Django-5.1.4-green)
+![Python](https://img.shields.io/badge/Python-3.12-blue)
+![OpenTofu](https://img.shields.io/badge/OpenTofu-orange)
 
 ## Description
 

@@ -1,18 +1,37 @@
 services:
-  db-country:
-    image: postgres:16-alpine
-    environment:
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_USER=postgres
+  localstack:
+    image: localstack/localstack:latest
     ports:
-      - 5432:5432
+      - "127.0.0.1:4566:4566"            # LocalStack Gateway
+      - "127.0.0.1:4510-4559:4510-4559"  # external services port range
+    environment:
+      - SERVICES=s3,lambda,apigateway,route53,rds
+      - DEBUG=1
+    volumes:
+      - bab-localstack:/var/lib/localstack
+      - "/var/run/docker.sock:/var/run/docker.sock"
     networks:
-      - djangotemplate
+      - bab
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready"]
+      test: ["CMD-SHELL", "curl -s http://localhost:4566/health | grep '\"status\": \"running\"'"]
       interval: 10s
       timeout: 5s
       retries: 5
+
+  opentofu:
+    image: ghcr.io/opentofu/opentofu:latest
+    volumes:
+      - .:/workspace
+    working_dir: /workspace
+    environment:
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_DEFAULT_REGION=us-east-1
+      - TF_VAR_environment=local
+    depends_on:
+      - localstack
+    networks:
+      - bab
 
   app-country:
     build:
@@ -25,7 +44,7 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      db-country:
+      localstack:
         condition: service_healthy
     command: ["python", "manage.py", "runserver", "0.0.0.0:8080"]
     networks:
@@ -40,43 +59,9 @@ services:
       timeout: 5s
       retries: 5
 
-  minio:
-    image: minio/minio:RELEASE.2023-10-25T06-33-25Z.fips
-    ports:
-      - "9000:9000"
-      - "9001:9001"
-    command: minio server /bab-country-cdn --console-address 0.0.0.0:9001
-    volumes:
-      - bab-country-cdn:/bab-country-cdn
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
-      interval: 20s
-      timeout: 10s
-      retries: 3
-    networks:
-      - bab
-
-  createbuckets:
-    image: minio/mc
-    env_file: .env
-    depends_on:
-      minio:
-        condition: service_healthy
-    volumes:
-      - bab-country-cdn:/bab-country-cdn
-    entrypoint: >
-      /bin/sh -c "
-      /usr/bin/mc config host add bab-country-cdn http://minio:9000 minio-country-user minio-country-password;
-      /usr/bin/mc rm -r --force bab-country-cdn/cdn.country.org;
-      /usr/bin/mc mb bab-country-cdn/cdn.country.org;
-      /usr/bin/mc policy -r set download bab-country-cdn/cdn.country.org;
-      exit 0;
-      "
-    networks:
-      - bab
-
 volumes:
   bab-country-cdn:
+  bab-localstack:
 
 networks:
   bab:

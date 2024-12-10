@@ -1,0 +1,10 @@
+aws_region         = "us-east-1"
+domain_name        = "bab.kuresto.dev"
+vpc_cidr           = "10.0.0.0/16"
+vpc_name           = "main-vpc"
+environment        = "production"
+ip_whitelist       = ["192.168.1.1/32", "192.168.2.1/32"]
+db_name            = "mydatabase"
+db_username        = "admin"
+db_password        = "supersecretpassword"
+backup_bucket_name = "bab-cdn.kuresto.dev"

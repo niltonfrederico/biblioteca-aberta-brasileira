@@ -6,10 +6,9 @@ services:
       - "127.0.0.1:4566:4566"            # LocalStack Gateway
       - "127.0.0.1:4510-4559:4510-4559"  # external services port range
     environment:
-      # LocalStack configuration: https://docs.localstack.cloud/references/configuration/
       - DEBUG=${DEBUG:-0}
     volumes:
-      - bab-localstack-dev:/var/lib/localstack"
+      - bab-localstack-dev:/var/lib/localstack
       - "/var/run/docker.sock:/var/run/docker.sock"
 
   opentofu:
@@ -27,7 +26,7 @@ services:
     networks:
       - bab
 
-  app-country:
+  app-template: &app_template
     build:
       context: .
       dockerfile: Dockerfile
@@ -35,12 +34,7 @@ services:
     env_file: .env
     volumes:
       - .:/app
-    ports:
-      - "8080:8080"
-    depends_on:
-      localstack:
-        condition: service_healthy
-    command: ["python", "manage.py", "runserver", "0.0.0.0:8080"]
+    command: ["entrypoint.sh"]
     networks:
       - bab
     healthcheck:
@@ -52,6 +46,32 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  app-country:
+    <<: *app_template
+    ports:
+      - "8080:8080"
+
+  app-state-1:
+    <<: *app_template
+    ports:
+      - "8081:8080"
+    cap_add:
+      - NET_ADMIN
+
+  app-state-2:
+    <<: *app_template
+    ports:
+      - "8082:8080"
+    cap_add:
+      - NET_ADMIN
+
+  app-state-3:
+    <<: *app_template
+    ports:
+      - "8083:8080"
+    cap_add:
+      - NET_ADMIN
 
 volumes:
   bab-country-cdn:

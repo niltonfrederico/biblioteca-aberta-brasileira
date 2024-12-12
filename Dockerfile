@@ -21,14 +21,14 @@ COPY --chown=appuser . ./
 # Development stage
 FROM base AS development
 
-# Install development dependencies
-RUN poetry install --no-root
+RUN apt-get update && apt-get install -y iproute2 && \
+    poetry install --no-root
 
 # Command to run the development server
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8080"]
 
 # Testing stage
-FROM base AS testing
+FROM development AS testing
 
 # Install testing dependencies
 RUN poetry install --no-root

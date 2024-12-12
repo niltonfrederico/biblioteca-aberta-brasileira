@@ -1,5 +1,6 @@
 *
 !bab/
 !tests/
+!entrypoint.sh
 !poetry.lock
 !pyproject.toml

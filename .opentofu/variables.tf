@@ -1,3 +1,9 @@
+variable "environment" {
+  description = "Environment name"
+  type        = string
+  default     = "local"
+}
+
 variable "aws_access_key" {
   description = "value of AWS_ACCESS_KEY_ID"
   type        = string
@@ -16,57 +22,14 @@ variable "aws_region" {
   default     = "us-east-1"
 }
 
-variable "domain_name" {
-  description = "Domain name for Route53"
+variable "domain" {
+  description = "Domain name"
   type        = string
-  default     = "bab.local"
+  default     = "kuresto.dev.br"
 }
 
-variable "vpc_cidr" {
-  description = "CIDR block for VPC"
+variable "domain_ip" {
+  description = "Domain IP"
   type        = string
-  default     = "10.0.0.0/16"
-}
-
-variable "vpc_name" {
-  description = "Name tag for VPC"
-  type        = string
-  default     = "bab-vpc"
-}
-
-variable "environment" {
-  description = "Environment name"
-  type        = string
-  default     = "local"
-}
-
-variable "ip_whitelist" {
-  description = "List of allowed IP addresses"
-  type        = list(string)
-  default     = ["10.0.0.0/16", "127.0.0.1/32"]
-}
-
-variable "db_name" {
-  description = "Aurora database name"
-  type        = string
-  default     = "bab"
-}
-
-variable "db_username" {
-  description = "Aurora database username"
-  type        = string
-  default     = "bab"
-}
-
-variable "db_password" {
-  description = "Aurora database password"
-  type        = string
-  sensitive   = true
-  default     = "development-password"
-}
-
-variable "backup_bucket_name" {
-  description = "S3 bucket name for backups"
-  type        = string
-  default     = "bab.localstack.backups"
+  default     = "localhost"
 }

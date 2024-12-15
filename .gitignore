@@ -307,6 +307,8 @@ pyrightconfig.json
 
 
 ### Terraform ###
+.opentofu/assets/**/*.zip
+
 # Local .terraform directories
 **/.terraform/*
 

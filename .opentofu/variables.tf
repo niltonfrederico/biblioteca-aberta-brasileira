@@ -33,3 +33,39 @@ variable "domain_ip" {
   type        = string
   default     = "localhost"
 }
+
+variable "lambda_setup" {
+  description = "Lambda setup"
+  type = map(object({
+    log_retention = number
+    memory_size   = number
+    timeout       = number
+  }))
+
+  default = {
+    local = {
+      log_retention = 7
+      memory_size   = 128
+      timeout       = 3
+    }
+    development = {
+      log_retention = 7
+      memory_size   = 128
+      timeout       = 3
+    }
+    production = {
+      log_retention = 90
+      memory_size   = 512
+      timeout       = 10
+    }
+  }
+}
+
+locals {
+  current_env_suffix = var.environment == "production" ? "" : "-${var.environment}"
+  common_tags = {
+    Environment = var.environment
+    Domain      = var.domain
+    ManagedBy   = "Opentofu"
+  }
+}

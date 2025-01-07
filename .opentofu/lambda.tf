@@ -21,8 +21,8 @@ resource "aws_iam_role" "lambda_role" {
 # Zip example lambda functions
 data "archive_file" "example" {
   type        = "zip"
-  source_dir  = "${path.module}/assets/lambda-example"
-  output_path = "${path.module}/assets/lambda-example.zip"
+  source_dir  = "${path.module}/assets/lambda_example"
+  output_path = "${path.module}/assets/lambda_example.zip"
 }
 
 # Admin Lambda function
